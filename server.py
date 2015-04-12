@@ -8,15 +8,45 @@ UDP_PORT = 5005
 CLIENT_PORT = 0
 
 
+# TODO Add ACK numbers from header
+def close():
+    global state
+    try:
+        if state == sharedFunc.States.ESTABLISHED:
+            print 'FIN received from sender. Sending ACK'
+            sock.sendto('ACK', (IP_ADDR, CLIENT_PORT))
+            state = sharedFunc.States.CLOSE_WAIT
+
+        if state == sharedFunc.States.CLOSE_WAIT:
+            print 'ACK sent. Sending FIN'
+            sock.sendto('FIN', (IP_ADDR, CLIENT_PORT))
+            state = sharedFunc.States.LAST_ACK
+        
+        if state == sharedFunc.States.LAST_ACK:
+            message, address = sock.recvfrom(4096)
+            if 'ACK' in message and address == (IP_ADDR, CLIENT_PORT):
+                print 'ACK received. Closing...'
+                state = sharedFunc.States.CLOSED
+                return
+
+
+    except socket.timeout:
+        close()
 
 def recv(bufsize):
     ## TODO Implement checksum and verify
     ## TODO Implement and verify sequence number
     # TODO Implement receiver queue
     message, address = sock.recvfrom(bufsize)
-    sock.sendto('ACK', address)
-    print 'ACK sent for data'
-    return (message, address)
+    # TODO sequence number verification
+    if address == (IP_ADDR, CLIENT_PORT): 
+        if 'FIN' in message:
+            close()
+        else:
+            sock.sendto('ACK', address)
+            print 'ACK sent for data'
+            return (message, address)
+
     
 
 if state == sharedFunc.States.CLOSED:
@@ -44,7 +74,7 @@ while state == sharedFunc.States.LISTEN:
             print "ESTABLISHED:"
 
 while state == sharedFunc.States.ESTABLISHED:
-    print "running"
+    print "running in state ", state
     print recv(4096)
 
 

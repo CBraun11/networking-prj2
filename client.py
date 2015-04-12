@@ -1,6 +1,7 @@
 import socket
 import sharedFunc
 import sys
+import time
 
 state = sharedFunc.States.CLOSED
 
@@ -37,8 +38,6 @@ def connect():
 def send(message):
     # TODO Implement and verify ACK number
     try:
-        #timer
-
         if len(message) > MAX_MESSAGE_LENGTH:
             message = message[:MAX_MESSAGE_LENGTH - HEADER_LENGTH] # Only send the first MAX_MESSAGE_LENGTH bytes
         sock.sendto(message, (IP_ADDR, SERVER_PORT))
@@ -55,9 +54,45 @@ def send(message):
         send(message)
 
     
+def close():
+    global state
+    #TODO add sequence numbers
+    #TODO ADD HEADER FIELDS
+    try:
+        #if state == sharedFunc.States.ESTABLISHED:
+        sock.sendto('FIN', (IP_ADDR, SERVER_PORT))
+        print 'Sent FIN'
+        state = sharedFunc.States.FIN_WAIT_1
+
+        if state == sharedFunc.States.FIN_WAIT_1:
+            response, address = sock.recvfrom(MAX_MESSAGE_LENGTH)
+            if address == (IP_ADDR, SERVER_PORT):
+                if 'ACK' in response:
+                    print 'ACK received.'
+                    state = sharedFunc.States.FIN_WAIT_2
+
+        if state == sharedFunc.States.FIN_WAIT_2:
+            response, address = sock.recvfrom(MAX_MESSAGE_LENGTH)
+            if address == (IP_ADDR, SERVER_PORT):
+                if 'FIN' in response:
+                    print 'FIN received. Sending ACK...'
+                    sock.sendto('ACK', (IP_ADDR, SERVER_PORT))
+                    state = sharedFunc.States.TIME_WAIT
+                    time.sleep(1)
+                    print 'Closing...'
+                    return
+
+        if state == sharedFunc.States.TIME_WAIT:
+            time.sleep(1)
+            return
+        
+
+    except socket.timeout:
+        close()
         
     
 
 
 connect()
 send('hello world')
+close()
