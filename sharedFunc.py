@@ -1,10 +1,7 @@
 #helper functions shared by severs and clientsimport socket
-import Queue
-from pprint import pprint
-import time
-import sys
-from random import randint
 
+class States:
+    CLOSED, LISTEN, SYN_RCVD, SYN_SENT, ESTABLISHED, FIN_WAIT_1, FIN_WAIT_2, CLOSE_WAIT, CLOSING, TIME_WAIT, CLOSED, LAST_ACK = range(12)
 
 def fromBitsToString(bits, lengthInByte=0):
     #from stackoverflow
@@ -58,7 +55,6 @@ def bitsDictToString(bitsDict):
     result += bitsToString(str(bin(bitsDict["ackNum"]))[2:])
     #get bits from them
     b = str(bin(bitsDict["syn"]))[2:] + str(bin(bitsDict["ack"]))[2:] + str(bin(bitsDict["fin"]))[2:] + str(bin(bitsDict["rst"]))[2:]
-    b += 
     result += bitsToString(b)
     result += bitsToString(str(bin(bitsDict["receiveWindowSize"]))[2:], 3) 
     result += bitsToString(str(bin(bitsDict["checksum"]))[2:])
@@ -66,8 +62,3 @@ def bitsDictToString(bitsDict):
         result += bitsDict["data"]
     return result
 
-temp = fromStringToBits('ab')
-print fromStringToBits('ab')
-print int(temp[0:16])
-
-print "text was" + fromBitsToString(temp)

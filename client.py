@@ -1,11 +1,12 @@
 import socket
+import sharedFunc
 import sys
+
+state = sharedFunc.States.CLOSED
 
 UDP_IP = "127.0.0.1"
 UDP_PORT = 5005
 MESSAGE = "Hello, World!"
-
-
 
 print "UDP target IP:", UDP_IP
 print "UDP target port:", UDP_PORT
