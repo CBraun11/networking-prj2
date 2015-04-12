@@ -27,8 +27,3 @@ def fromStringToBits(s):
         result = result + bits
     return result
 
-temp = fromStringToBits('ab')
-print fromStringToBits('ab')
-print int(temp[0:16])
-
-print "text was" + fromBitsToString(temp)
