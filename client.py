@@ -18,12 +18,12 @@ sock = socket.socket(socket.AF_INET, # Internet
 def connect():  
     print 'In connect'
     sock.sendto('SYN', (UDP_IP, UDP_PORT))
-    state = sharedFunc.States.SYN-SENT
+    state = sharedFunc.States.SYN_SENT
     print 'SYN sent'
 
     while True:
         message, address = sock.recvfrom(1024)
-        if address == (UDP_IP, UDP_PORT) and message == 'SYN-ACK':
+        if address == (UDP_IP, UDP_PORT) and 'SYN-ACK' in message:
             print 'SYN-ACK received'
             state = sharedFunc.States.ESTABLISHED
             break
