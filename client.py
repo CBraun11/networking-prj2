@@ -4,16 +4,29 @@ import sys
 
 state = sharedFunc.States.CLOSED
 
+# Add command line input
+
 UDP_IP = "127.0.0.1"
 UDP_PORT = 5005
-MESSAGE = "Hello, World!"
 
-
-
-print "UDP target IP:", UDP_IP
-print "UDP target port:", UDP_PORT
-print "message:", MESSAGE
+MAX_LENGTH = 4096
 
 sock = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
-sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))
+
+
+def connect():  
+    print 'In connect'
+    sock.sendto('SYN', (UDP_IP, UDP_PORT))
+    state = sharedFunc.States.SYN-SENT
+    print 'SYN sent'
+
+    while True:
+        message, address = sock.recvfrom(1024)
+        if address == (UDP_IP, UDP_PORT) and message == 'SYN-ACK':
+            print 'SYN-ACK received'
+            state = sharedFunc.States.ESTABLISHED
+            break
+
+    sock.sendto('ACK', (UDP_IP, UDP_PORT))
+    print 'ACK sent'
