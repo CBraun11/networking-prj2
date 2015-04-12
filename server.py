@@ -24,7 +24,7 @@ while state == sharedFunc.States.LISTEN:
 	data, addr = sock.recvfrom(1024) 
 	while state != sharedFunc.States.ESTABLISHED:
 		if (data == "ACK"):
-			state = haredFunc.States.ESTABLISHED
+			state = sharedFunc.States.ESTABLISHED
 			print "ESTABLISHED:"
 
 while state == sharedFunc.States.ESTABLISHED:
