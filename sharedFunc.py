@@ -35,15 +35,15 @@ def stringToBitdict(s):
     bitsDict["seqNum"] = int(bits[32:64], 2)
     bitsDict["ackNum"] = int(bits[64:96], 2)
 
-    bitsDict["syn"] = int(bits[96], 2)
-    bitsDict["ack"] = int(bits[97], 2)
-    bitsDict["fin"] = int(bits[98], 2)
-    bitsDict["rst"] = int(bits[99], 2)
-    bitsDict['datalength'] = int(bits[100:112], 2)
-    bitsDict["windowSize"] = int(bits[112:128], 2)
-    bitsDict["checksum"] = int(bits[128:144], 2)
+    bitsDict["syn"] = int(bits[96:104], 2)
+    bitsDict["ack"] = int(bits[104:112], 2)
+    bitsDict["fin"] = int(bits[112:120], 2)
+    bitsDict["rst"] = int(bits[120:128], 2)
+    bitsDict['datalength'] = int(bits[128:144], 2)
+    bitsDict["windowSize"] = int(bits[144:160], 2)
+    bitsDict["checksum"] = int(bits[160:176], 2)
     #144 bits takes 18 characters, thus 16th to the end string are data
-    bitsDict["data"] = s[18:]
+    bitsDict["data"] = s[22:]
     return bitsDict
 
 def bitsDictToString(bitsDict):
@@ -54,32 +54,16 @@ def bitsDictToString(bitsDict):
         if (key not in bitsDict):
             print "is it exist?"
             bitsDict[key] = 0;
+
     result += binascii.unhexlify('%x' % bitsDict["sourcePort"]) 
     result += binascii.unhexlify('%x' % bitsDict["destPort"]) 
     result += binascii.unhexlify('%x' % bitsDict["sourcePort"]) 
     result += binascii.unhexlify('%x' % bitsDict["seqNum"]) 
     result += binascii.unhexlify('%x' % bitsDict["ackNum"]) 
-
-    print result;
-
-    print "=============================="
-    print 
-    bs = str(bin(bitsDict["syn"])[2:])  + str(bin(bitsDict["ack"])[2:])  + str(bin(bitsDict["fin"])[2:]) + str(bin(bitsDict["rst"])[2:]) + str(bin(bitsDict["datalength"])[2:]) 
-    
-    # print str(bin(bitsDict["ack"])[2:])
-    # print str(bin(bitsDict["syn"])[2:])
-    # print str(bin(bitsDict["rst"])[2:])
-    # print str(bin(bitsDict["fin"])[2:])
-    # print str(bin(bitsDict["datalength"])[2:])
-    print  type(bs)
-
-    bs =  int(bs, 2)
-
-    print type(bs)
-
-    bs = int(bs)
-    # result += binascii.unhexlify('%x' % bs)
-    # result += bitsToString(b)
+    result += str(bitsDict["syn"])
+    result += str(bitsDict["ack"])
+    result += str(bitsDict["fin"])
+    result += str(bitsDict["rst"])
     result += binascii.unhexlify('%x' % bitsDict["windowSize"]) 
     result += binascii.unhexlify('%x' % bitsDict["checksum"]) 
     if "data" in bitsDict:
@@ -99,9 +83,13 @@ def bitsDictToString(bitsDict):
 # print "teting bitdic to String" + bitsDictToString(bitsToDict('abcdefg8abcdefg8ab'))
 # print "testing string to bits" + stringToBits('0011000100110001001100000011000000110000001100000011000100110000001100010011000100110000001100000011000000110001001100000011000100110001001100000011000000110000001100010011000100110000001100010011000100110000001100000011000100110000001100000011000100110001001100000011000000110001001100000011000100110000001100010011000100110000001100000011000100110001001100000011000000110001001100010011000000110000001100010011000100110001001100000011000000110001001100010011000100110000001100000011000000110001001100010011000000110000001100000011000000110001001100000011000100110001001100000011000000110000001100010011000000110000001100010011000100110000001100000011000000110001001100010011000000110001001100010011000000110000001100010011000000110000001100000011000100110001001100000011000100110000001100010011000000110001001100010011000000110000001100010011000100110000001100010011000100110000001100000011000100110001001100010011000000110000001100010011000100110001001100000011000000110000ab')
 
-tempDict = stringToBitdict('abcdababefg8abfg8abc90')
+tempDict = stringToBitdict('abcdxzzqefg8abfg8abc90ghjkl;dsa743j')
 
-tempDict['seqNum'] = tempDict['seqNum'] + 1
+tempDict['ack'] = 1
+print tempDict
+print bitsDictToString(tempDict)
+
+tempDict['ack'] = 0
 print tempDict
 print bitsDictToString(tempDict)
 
