@@ -18,7 +18,7 @@ sock = socket.socket(socket.AF_INET, # Internet
 def connect():  
     print 'In connect'
     sock.sendto('SYN', (UDP_IP, UDP_PORT))
-    state = sharedFunc.States.SYN-SENT
+    state = sharedFunc.States.SYN_SENT
     print 'SYN sent'
 
     while True:
@@ -30,3 +30,5 @@ def connect():
 
     sock.sendto('ACK', (UDP_IP, UDP_PORT))
     print 'ACK sent'
+
+connect()
