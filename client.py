@@ -1,16 +1,16 @@
 import socket
-import Queue
-from pprint import pprint
-import time
 import sys
-from random import randint
+
+UDP_IP = "127.0.0.1"
+UDP_PORT = 5005
+MESSAGE = "Hello, World!"
 
 
 
-# def setupClientData():
-# 	clientSocket = socket(AF_INET, SOCK_DGRAM);
-    # dest, port, set up buffer
+print "UDP target IP:", UDP_IP
+print "UDP target port:", UDP_PORT
+print "message:", MESSAGE
 
-# def connectTo(String hostName, int portNum):
-# 	#Setting {'syn', 1},
-#     clientSocket.sendto(address);
+sock = socket.socket(socket.AF_INET, # Internet
+                     socket.SOCK_DGRAM) # UDP
+sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))
