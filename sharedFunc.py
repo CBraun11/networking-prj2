@@ -7,19 +7,13 @@ from random import randint
 
 
 def fromBitsToString(bits, lengthInByte=0):
-    # make sure the output string is of correct length
-    if (len(bits) < lengthInByte * 8):
-        bits = str('0' * (lengthInByte * 8 - len(bits))) + bits
-    else:
-        if (lengthInByte != 0 and len(bits) > lengthInByte * 8):
-            bits = bits[-lengthInByte * 8:]
-
-    chars = []
-    for b in range(len(bits) / 8):
-        byte = bits[b*8:(b+1)*8]
-        chars.append(chr(int(''.join([str(bit) for bit in byte]), 2)))
-
-    return ''.join(chars)
+    #from stackoverflow
+    result = ''
+    for c in s:
+        bits = bin(ord(c))[2:]
+        bits = '00000000'[len(bits):] + bits
+        result = result + bits
+    return result
 
 
 def fromStringToBits(s):
@@ -28,6 +22,48 @@ def fromStringToBits(s):
         bits = bin(ord(c))[2:]
         bits = '00000000'[len(bits):] + bits
         result = result + bits
+    return result
+
+def bitsToDict(s):
+    # stringToRtpPacketDict
+    #rtpPacketDictToString
+    # creating a dictionary, this way we don't need to remember the particular number for each field in the header
+    #making it easier to acccess each field in the header
+    bitsDict = {}
+    bits = stringToBits(s);
+    bitsDict["sourcePort"] = int(bits[0:16], 2)
+    bitsDict["destPort"] = int(bits[16:32], 2)
+    bitsDict["seqNum"] = int(bits[32:64], 2)
+    bitsDict["ackNum"] = int(bits[64:96], 2)
+
+    bitsDict["syn"] = int(bits[96:97], 2)
+    bitsDict["ack"] = int(bits[97:98], 2)
+    bitsDict["fin"] = int(bits[98:99], 2)
+    bitsDict["rst"] = int(bits[99:100], 2)
+    bitsDict["windowSize"] = int(bits[100:112], 2)
+    bitsDict["checksum"] = int(bits[112:128], 2)
+    #128 bits takes 16 characters, thus 16th to the end string are data
+    bitsDict["data"] = s[16:]
+    return bitsDict
+
+def bitsDictToString(bitsDict):
+    result = ""
+    keyList = {"sourcePort", "destPort", "seqNum", "ackNum", "syn", "ack", "fin", "rst", "windowSize", "checksum"}
+    for key in keyList:
+        if (key not in bitsDict):
+            bitsDict[key] = 0;
+    result += bitsToString(str(bin(bitsDict["sourcePort"]))[2:])
+    result += bitsToString(str(bin(bitsDict["destPort"]))[2:])
+    result += bitsToString(str(bin(bitsDict["seqNum"]))[2:])
+    result += bitsToString(str(bin(bitsDict["ackNum"]))[2:])
+    #get bits from them
+    b = str(bin(bitsDict["syn"]))[2:] + str(bin(bitsDict["ack"]))[2:] + str(bin(bitsDict["fin"]))[2:] + str(bin(bitsDict["rst"]))[2:]
+    b += 
+    result += bitsToString(b)
+    result += bitsToString(str(bin(bitsDict["receiveWindowSize"]))[2:], 3) 
+    result += bitsToString(str(bin(bitsDict["checksum"]))[2:])
+    if "data" in bitsDict:
+        result += bitsDict["data"]
     return result
 
 temp = fromStringToBits('ab')
