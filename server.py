@@ -19,7 +19,7 @@ while state == sharedFunc.States.LISTEN:
 	## Need to check SYN and checksum
 	if "SYN" in data:
 		print "sending syn-ack"
-		sock.sendto('SYN-ACK', (UDP_IP, UDP_PORT))
+		sock.sendto('SYN-ACK', (addr))
 		state = sharedFunc.States.SYN_RCVD
 	data, addr = sock.recvfrom(1024) 
 	while state != sharedFunc.States.ESTABLISHED:
