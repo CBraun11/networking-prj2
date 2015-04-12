@@ -18,7 +18,8 @@ sock = socket.socket(socket.AF_INET, # Internet
 sock.settimeout(2)
 
 
-def connect():  
+def connect():
+    global state  
     print 'In connect'
     sock.sendto('SYN', (IP_ADDR, SERVER_PORT))
     state = sharedFunc.States.SYN_SENT
@@ -59,10 +60,10 @@ def close():
     #TODO add sequence numbers
     #TODO ADD HEADER FIELDS
     try:
-        #if state == sharedFunc.States.ESTABLISHED:
-        sock.sendto('FIN', (IP_ADDR, SERVER_PORT))
-        print 'Sent FIN'
-        state = sharedFunc.States.FIN_WAIT_1
+        if state == sharedFunc.States.ESTABLISHED:
+            sock.sendto('FIN', (IP_ADDR, SERVER_PORT))
+            print 'Sent FIN'
+            state = sharedFunc.States.FIN_WAIT_1
 
         if state == sharedFunc.States.FIN_WAIT_1:
             response, address = sock.recvfrom(MAX_MESSAGE_LENGTH)
