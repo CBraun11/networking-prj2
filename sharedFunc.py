@@ -33,10 +33,10 @@ def bitsToDict(s):
     bitsDict["seqNum"] = int(bits[32:64], 2)
     bitsDict["ackNum"] = int(bits[64:96], 2)
 
-    bitsDict["syn"] = int(bits[96:97], 2)
-    bitsDict["ack"] = int(bits[97:98], 2)
-    bitsDict["fin"] = int(bits[98:99], 2)
-    bitsDict["rst"] = int(bits[99:100], 2)
+    bitsDict["syn"] = int(bits[96], 2)
+    bitsDict["ack"] = int(bits[97], 2)
+    bitsDict["fin"] = int(bits[98], 2)
+    bitsDict["rst"] = int(bits[99], 2)
     bitsDict["windowSize"] = int(bits[100:112], 2)
     bitsDict["checksum"] = int(bits[112:128], 2)
     #128 bits takes 16 characters, thus 16th to the end string are data
