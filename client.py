@@ -23,7 +23,7 @@ def connect():
 
     while True:
         message, address = sock.recvfrom(1024)
-        if address == (UDP_IP, UDP_PORT) and 'SYN-ACK' in message:
+        if 'SYN-ACK' in message:
             print 'SYN-ACK received'
             state = sharedFunc.States.ESTABLISHED
             break
