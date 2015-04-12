@@ -23,7 +23,7 @@ def setupServer():
    	data, addr = sock.recvfrom(1024) 
    	if (data == "ACK"):
    		state = haredFunc.States.ESTABLISHED
-while True:
-    data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
-    print "received message:", data
+   		print "ESTABLISHED:"
+
+   
 
