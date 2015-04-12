@@ -1,10 +1,7 @@
 #helper functions shared by severs and clientsimport socket
-import Queue
-from pprint import pprint
-import time
-import sys
-from random import randint
 
+class States:
+    CLOSED, LISTEN, SYN_RCVD, SYN_SENT, ESTABLISHED, FIN_WAIT_1, FIN_WAIT_2, CLOSE_WAIT, CLOSING, TIME_WAIT, CLOSED, LAST_ACK = range(12)
 
 def fromBitsToString(bits, lengthInByte=0):
     # make sure the output string is of correct length

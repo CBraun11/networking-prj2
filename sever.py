@@ -1,7 +1,12 @@
 import socket
+import sharedFunc
+import sys
 
 UDP_IP = "127.0.0.1"
 UDP_PORT = 5005
+
+
+state = sharedFunc.States.CLOSED
 
 sock = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
