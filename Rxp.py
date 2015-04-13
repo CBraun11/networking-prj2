@@ -54,7 +54,7 @@ def recv(bufsize):
     message, address = sock.recvfrom(bufsize)
     print "OK"
     # TODO sequence number verification
-    if address == (Clinet_IP, CLIENT_PORT): 
+    if address == (Client_IP, CLIENT_PORT): 
         if 'FIN' in message:
             close()
         else:

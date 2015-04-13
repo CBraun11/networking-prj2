@@ -1,12 +1,18 @@
+# This file contains helper functions, mainly as an interface to the RxP header. 
+# We had issues with the implementation of bit manipulation in
+# Python, but we leave our attempt to show our logic.
+
 import binascii
 from random import randint
 
-#Unfortunately, we had somem issues with python bits manipiluations
-#helper functions shared by severs and clientsimport socket
+
 MAX_LENGTH = 4096
+
+# State definitions.
 class States:
     CLOSED, LISTEN, SYN_RCVD, SYN_SENT, ESTABLISHED, FIN_WAIT_1, FIN_WAIT_2, CLOSE_WAIT, CLOSING, TIME_WAIT, CLOSED, LAST_ACK = range(12)
 
+# Checksum implementation.
 def carry_around_add(a, b):
     c = a + b
     return (c & 0xffff) + (c >> 16)
@@ -18,6 +24,8 @@ def checksum(msg):
         s = carry_around_add(s, w)
     return ~s & 0xffff
 
+
+# helper functions to get convert character strings to bitstrings and vice versa.
 def stringToBits(s):
     result = ''
     for c in s:
@@ -33,14 +41,13 @@ def bitsToString(bits):
         chars.append(chr(int(''.join([str(bit) for bit in byte]), 2)))
     return ''.join(chars)
 
+
+# Function that converts a string from the network into a dictionary for easy access and edits.
 def stringToBitdict(s):
-    # stringToRtpPacketDict
-    #rtpPacketDictToString
-    # creating a dictionary, this way we don't need to remember the particular number for each field in the header
-    #making it easier to acccess each field in the header
+    # Create a dictionary, this way we don't need to remember the particular number for each field in the header
+    # Making it easier to acccess each field in the header
     bitsDict = {}
     bits = stringToBits(s);
-    # print int(bits[96:97], 2)
     bitsDict["sourcePort"] = int(bits[0:16], 2)
     bitsDict["destPort"] = int(bits[16:32], 2)
     bitsDict["seqNum"] = int(bits[32:64], 2)
@@ -55,7 +62,6 @@ def stringToBitdict(s):
     bitsDict["windowSize"] = int(bits[144:160], 2)
     bitsDict["checksum"] = int(bits[160:176], 2)
 
-    #144 bits takes 18 characters, thus 16th to the end string are data
     bitsDict["data"] = s[24:]
     return bitsDict
 
@@ -70,11 +76,6 @@ def bitsDictToString(bitsDict):
     result += str(bitsDict["destPort"])
     result += str(bitsDict["seqNum"])
     result += str(bitsDict["ackNum"])
-    # result += binascii.unhexlify('%x' % bitsDict["sourcePort"]) 
-    # result += binascii.unhexlify('%x' % bitsDict["destPort"]) 
-    # result += binascii.unhexlify('%x' % bitsDict["sourcePort"]) 
-    # result += binascii.unhexlify('%x' % bitsDict["seqNum"]) 
-    # result += binascii.unhexlify('%x' % bitsDict["ackNum"]) 
     result += str(bitsDict["syn"])
     result += str(bitsDict["ack"])
     result += str(bitsDict["fin"])
