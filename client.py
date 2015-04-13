@@ -1,9 +1,10 @@
 import socket
-import sharedFunc
+from sharedFunc import *
 import sys
 import time
+from random import randint
 
-state = sharedFunc.States.CLOSED
+state = States.CLOSED
 
 # Add command line input
 
@@ -17,27 +18,46 @@ sock = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
 sock.settimeout(2)
 
+sourcePort = 8080
 
 def connect():
+    #to connect to the server, we need to have 3 ways handshake
+    #1. the client sends SYN to the server
+    #2. Upon received the syn at the server side, the server will send ack + syn to the client
+    #3. Lastly the client sends ack to the server and finish the establishment 
     global state  
     print 'In connect'
-    sock.sendto('SYN', (IP_ADDR, SERVER_PORT))
-    state = sharedFunc.States.SYN_SENT
-    print 'SYN sent'
-
+    initialSeqNum = randint(0, 20000)
+    synpacketDict = {}
+    for key in keyList:
+        synpacketDict[key] = 0
+    synpacketDict["sourcePort"] = sourcePort
+    synpacketDict["destPort"] = 5005
+    synpacketDict["seqNum"] = initialSeqNum
+    synpacketDict['syn'] = 1
+    synpacketString = bitsDictToString(synpacketDict)
+    sock.sendto(synpacketString, (IP_ADDR, SERVER_PORT))
+    state = States.SYN_SENT
+    # print 'SYN sent'
     while True:
         message, address = sock.recvfrom(1024)
-        if 'SYN-ACK' in message:
+        synACKdict = stringToBitdict(message)
+        #client checks the packet
+        if synACKdict['ack'] and synACKdict['syn'] and synACKdict['ackNum'] == initialSeqNum and checksum(synACKdict['checksum']):
             print 'SYN-ACK received'
-            state = sharedFunc.States.ESTABLISHED
+            state = States.ESTABLISHED
             break
-
-    sock.sendto('ACK', (IP_ADDR, SERVER_PORT))
+    #sending the ack
+    ackpacketDict["seqNum"] = initialSeqNum
+    ackpacketDict['ackNum'] = synACKdict['seqNum']
+    ackpacketDict["sourcePort"] = sourcePort
+    ackpacketDict["destPort"] = 5005
+    ackpacketDict['ack'] = 1
+    sock.sendto(ackpacketDict, (IP_ADDR, SERVER_PORT))
     print 'ACK sent'
 
-
 def send(message):
-    # TODO Implement and verify ACK number
+    
     try:
         if len(message) > MAX_MESSAGE_LENGTH:
             message = message[:MAX_MESSAGE_LENGTH - HEADER_LENGTH] # Only send the first MAX_MESSAGE_LENGTH bytes
@@ -49,8 +69,6 @@ def send(message):
             if 'ACK' in response:
                 print 'ACK received'
                 return len(message)
-            
-
     except socket.timeout:
         send(message)
 
@@ -60,40 +78,44 @@ def close():
     #TODO add sequence numbers
     #TODO ADD HEADER FIELDS
     try:
-        if state == sharedFunc.States.ESTABLISHED:
-            sock.sendto('FIN', (IP_ADDR, SERVER_PORT))
+        if state == States.ESTABLISHED:
+            #send ack to the client
+            ackpacketDict = {}
+            ackpacketDict["sourcePort"] = "127.0.0.1"
+            ackpacketDict["destPort"] = CLIENT_PORT
+            ackpacketDict["ackNum"] = messageDick['seqNum'] + messageDick['datalength']
+            ackpacketDict['ack'] = 1
+            ackpacketString = bitsDictToString(ackpacketDict)
+            sock.sendto(ackpacketString, (IP_ADDR, SERVER_PORT))
+            
             print 'Sent FIN'
-            state = sharedFunc.States.FIN_WAIT_1
+            state = States.FIN_WAIT_1
 
-        if state == sharedFunc.States.FIN_WAIT_1:
+        if state == States.FIN_WAIT_1:
             response, address = sock.recvfrom(MAX_MESSAGE_LENGTH)
             if address == (IP_ADDR, SERVER_PORT):
                 if 'ACK' in response:
                     print 'ACK received.'
-                    state = sharedFunc.States.FIN_WAIT_2
+                    state = States.FIN_WAIT_2
 
-        if state == sharedFunc.States.FIN_WAIT_2:
+        if state == States.FIN_WAIT_2:
             response, address = sock.recvfrom(MAX_MESSAGE_LENGTH)
             if address == (IP_ADDR, SERVER_PORT):
                 if 'FIN' in response:
                     print 'FIN received. Sending ACK...'
                     sock.sendto('ACK', (IP_ADDR, SERVER_PORT))
-                    state = sharedFunc.States.TIME_WAIT
+                    state = States.TIME_WAIT
                     time.sleep(1)
                     print 'Closing...'
                     return
 
-        if state == sharedFunc.States.TIME_WAIT:
+        if state == States.TIME_WAIT:
             time.sleep(1)
             return
-        
-
     except socket.timeout:
         close()
-        
-    
-
 
 connect()
 send('hello world')
 close()
+

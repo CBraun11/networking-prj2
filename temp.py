@@ -54,6 +54,7 @@ def bitsDictToString(bitsDict):
         if (key not in bitsDict):
             print "is it exist?"
             bitsDict[key] = 0;
+
     result += binascii.unhexlify('%x' % bitsDict["sourcePort"]) 
     result += binascii.unhexlify('%x' % bitsDict["destPort"]) 
     result += binascii.unhexlify('%x' % bitsDict["sourcePort"]) 
@@ -63,22 +64,10 @@ def bitsDictToString(bitsDict):
     print result;
 
     print "=============================="
-    print 
     bs = str(bin(bitsDict["syn"])[2:])  + str(bin(bitsDict["ack"])[2:])  + str(bin(bitsDict["fin"])[2:]) + str(bin(bitsDict["rst"])[2:]) + str(bin(bitsDict["datalength"])[2:]) 
-    
-    # print str(bin(bitsDict["ack"])[2:])
-    # print str(bin(bitsDict["syn"])[2:])
-    # print str(bin(bitsDict["rst"])[2:])
-    # print str(bin(bitsDict["fin"])[2:])
-    # print str(bin(bitsDict["datalength"])[2:])
-    print  type(bs)
-
-    bs =  int(bs, 2)
-
-    print type(bs)
-
-    bs = int(bs)
-    # result += binascii.unhexlify('%x' % bs)
+    bs = int(bs, 2)
+    print bs
+    result += binascii.b2a_hqx('%x' % bs)
     # result += bitsToString(b)
     result += binascii.unhexlify('%x' % bitsDict["windowSize"]) 
     result += binascii.unhexlify('%x' % bitsDict["checksum"]) 
@@ -98,17 +87,12 @@ def bitsDictToString(bitsDict):
 
 # print "teting bitdic to String" + bitsDictToString(bitsToDict('abcdefg8abcdefg8ab'))
 # print "testing string to bits" + stringToBits('0011000100110001001100000011000000110000001100000011000100110000001100010011000100110000001100000011000000110001001100000011000100110001001100000011000000110000001100010011000100110000001100010011000100110000001100000011000100110000001100000011000100110001001100000011000000110001001100000011000100110000001100010011000100110000001100000011000100110001001100000011000000110001001100010011000000110000001100010011000100110001001100000011000000110001001100010011000100110000001100000011000000110001001100010011000000110000001100000011000000110001001100000011000100110001001100000011000000110000001100010011000000110000001100010011000100110000001100000011000000110001001100010011000000110001001100010011000000110000001100010011000000110000001100000011000100110001001100000011000100110000001100010011000000110001001100010011000000110000001100010011000100110000001100010011000100110000001100000011000100110001001100010011000000110000001100010011000100110001001100000011000000110000ab')
-
+# abcdababacefg8abfg8abc90
 tempDict = stringToBitdict('abcdababefg8abfg8abc90')
 
-tempDict['seqNum'] = tempDict['seqNum'] + 1
-print tempDict
-print bitsDictToString(tempDict)
-
-
-# 0110101100010
-# tempDict['ack'] = int(0,2)
+# tempDict['seqNum'] = tempDict['seqNum'] + 1
 # print tempDict
-# print bitsDictToString(tempDict)
+print "the original dic is:"
+print tempDict
+print stringToBitdict(bitsDictToString(tempDict))
 
-# print 
