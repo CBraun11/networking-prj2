@@ -42,8 +42,9 @@ def stringToBitdict(s):
     bitsDict['datalength'] = int(bits[128:144], 2)
     bitsDict["windowSize"] = int(bits[144:160], 2)
     bitsDict["checksum"] = int(bits[160:176], 2)
+    bitsDict["datalength"] = int(bits[176:192], 2)
     #144 bits takes 18 characters, thus 16th to the end string are data
-    bitsDict["data"] = s[22:]
+    bitsDict["data"] = s[24:]
     return bitsDict
 
 def bitsDictToString(bitsDict):
@@ -65,7 +66,8 @@ def bitsDictToString(bitsDict):
     result += str(bitsDict["fin"])
     result += str(bitsDict["rst"])
     result += binascii.unhexlify('%x' % bitsDict["windowSize"]) 
-    result += binascii.unhexlify('%x' % bitsDict["checksum"]) 
+    result += binascii.unhexlify('%x' % bitsDict["checksum"])
+    result += binascii.unhexlify('%x' % bitsDict["datalength"]) 
     if "data" in bitsDict:
         result += bitsDict["data"]
     print "result is : "
