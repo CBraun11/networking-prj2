@@ -21,10 +21,10 @@ sock.settimeout(2)
 sourcePort = 8080
 
 def connect():
-    #to connect to the server, we have 3 way handshake
-    #1. the client sends SYN to the server
-    #2. Upon received the syn at the server side, the server will send ack + syn to the client
-    #3. Lastly the client sends ack to the server and finish the establishment 
+    # To connect to the server, we have a 3 way handshake
+    # 1. the client sends SYN to the server
+    # 2. Upon received the syn at the server side, the server will send ack + syn to the client
+    # 3. Lastly the client sends ack to the server and finish the establishment 
     global state  
     print 'Connecting...'
 
@@ -48,7 +48,7 @@ def connect():
     while True:
         message, address = sock.recvfrom(1024)
         synACKdict = stringToBitdict(message)
-        #client checks the packet
+        # Client checks the packet
         if synACKdict['ack'] and synACKdict['syn'] and synACKdict['ackNum'] == initialSeqNum and checksum(synACKdict['checksum']):
             print 'SYN-ACK received'
             state = States.ESTABLISHED
